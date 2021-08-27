@@ -73,7 +73,7 @@ export default function Home(): JSX.Element {
             loadingText="Carregando..."
             onClick={() => fetchNextPage()}
           >
-            Carregar mais fotos
+            Carregar mais
           </Button>
         )}
       </Box>

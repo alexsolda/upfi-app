@@ -17,7 +17,7 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
   const toast = useToast();
 
   const acceptedFormats =
-    /(?:([^:/?#]+):)?(?:([^/?#]*))?([^?#](?:jpeg|gif|png))(?:\?([^#]*))?(?:#(.*))?/g;
+    /(?:([^:/?#]+):)?(?:([^/?#]*))?([^?#](?:png|jpeg|gif))(?:\?([^#]*))?(?:#(.*))?/g;
 
   const formValidations = {
     image: {
@@ -27,7 +27,7 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
           fileList[0].size < 100000000 || 'O arquivo deve ser menor que 10MB',
         acceptedFormats: fileList =>
           acceptedFormats.test(fileList[0].type) ||
-          'Tipos válidos: JPG, PNG, GIF',
+          'Somente são aceitos arquivos PNG, JPEG e GIF',
       },
     },
     title: {
@@ -45,7 +45,7 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
       required: 'Descrição obrigatória',
       maxLength: {
         value: 30,
-        message: 'Máximo de 30 caracteres',
+        message: 'Máximo de 65 caracteres',
       },
     },
   };

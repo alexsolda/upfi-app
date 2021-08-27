@@ -1,5 +1,5 @@
 import { Button, Box } from '@chakra-ui/react';
-import { useCallback, useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import { useInfiniteQuery } from 'react-query';
 
 import { Header } from '../components/Header';
@@ -9,26 +9,27 @@ import { Loading } from '../components/Loading';
 import { Error } from '../components/Error';
 
 interface Image {
+  id: string;
   title: string;
   description: string;
   url: string;
   ts: number;
-  id: string;
 }
 
-interface ImagesData {
-  data: Image[];
+interface ApiImageResponse {
   after: string;
+  data: Image[];
 }
 
 export default function Home(): JSX.Element {
   const loadData = useCallback(
-    async ({ pageParam = null }): Promise<ImagesData> => {
-      const { data } = await api.get('/images', {
+    async ({ pageParam = null }): Promise<ApiImageResponse> => {
+      const { data } = await api.get('/api/images', {
         params: {
           after: pageParam,
         },
       });
+
       return data;
     },
     []
@@ -46,19 +47,18 @@ export default function Home(): JSX.Element {
   });
 
   const formattedData = useMemo(() => {
-    const newData = data?.pages.flatMap(image => {
-      return image.data.flat();
+    const formatted = data?.pages.flatMap(imageData => {
+      return imageData.data.flat();
     });
-
-    return newData;
+    return formatted;
   }, [data]);
-
-  if (isLoading) {
-    return <Loading />;
-  }
 
   if (isError) {
     return <Error />;
+  }
+
+  if (isLoading) {
+    return <Loading />;
   }
 
   return (
@@ -69,8 +69,10 @@ export default function Home(): JSX.Element {
         <CardList cards={formattedData} />
         {hasNextPage && (
           <Button
+            mt="6"
+            colorScheme="orange"
+            disabled={isFetchingNextPage}
             isLoading={isFetchingNextPage}
-            loadingText="Carregando..."
             onClick={() => fetchNextPage()}
           >
             Carregar mais

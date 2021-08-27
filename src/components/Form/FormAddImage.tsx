@@ -11,6 +11,12 @@ interface FormAddImageProps {
   closeModal: () => void;
 }
 
+interface NewImageData {
+  title: string;
+  description: string;
+  url: string;
+}
+
 export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
   const [imageUrl, setImageUrl] = useState('');
   const [localImageUrl, setLocalImageUrl] = useState('');
@@ -52,12 +58,7 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
 
   const queryClient = useQueryClient();
   const mutation = useMutation(
-    async (image: ImageData) => {
-      await api.post('/images', {
-        ...image,
-        url: imageUrl,
-      });
-    },
+    (image: NewImageData) => api.post('/images', { ...image, url: imageUrl }),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('images');
@@ -69,13 +70,15 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
     useForm();
   const { errors } = formState;
 
-  const onSubmit = async (data: ImageData): Promise<void> => {
+  const onSubmit = async (data: NewImageData): Promise<void> => {
     try {
       if (!imageUrl) {
         toast({
           title: 'Imagem não adicionada',
           description:
             'É preciso adicionar e aguardar o upload de uma imagem antes de realizar o cadastro.',
+          duration: 5000,
+          isClosable: true,
         });
 
         return;
@@ -84,16 +87,20 @@ export function FormAddImage({ closeModal }: FormAddImageProps): JSX.Element {
       toast({
         title: 'Imagem cadastrada',
         description: 'Sua imagem foi cadastrada com sucesso.',
+        duration: 5000,
+        isClosable: true,
       });
     } catch {
       toast({
         title: 'Falha no cadastro',
         description: 'Ocorreu um erro ao tentar cadastrar a sua imagem.',
+        duration: 5000,
+        isClosable: true,
       });
     } finally {
+      reset();
       setLocalImageUrl('');
       setImageUrl('');
-      reset();
       closeModal();
     }
   };
